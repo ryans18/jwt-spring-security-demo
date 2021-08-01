@@ -1,6 +1,7 @@
 server:
   servlet:
     context-path: /
+  port: 8088
 
 # better readable jackson serialization format
 spring:
@@ -11,12 +12,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-
-  h2:
-    console:
-      # URL: jdbc:h2:mem:testdb
-      enabled: true
-
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/database
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
   devtools:
     restart:
       enabled: true
