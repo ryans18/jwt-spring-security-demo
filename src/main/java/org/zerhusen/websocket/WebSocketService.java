@@ -3,6 +3,7 @@ package org.zerhusen.websocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -14,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class WebSocketService {
 
-   private final Logger logger = LoggerFactory.getLogger(WebSocketService.class);
+   private static final Logger logger = LoggerFactory.getLogger(WebSocketService.class);
    /**
     * 静态变量，用来记录当前在线连接数，应把它设计成线程安全的
     */
@@ -43,6 +44,7 @@ public class WebSocketService {
       logger.info("web socket 连接成功:  " + userId);
       this.session = session;
       this.userId = userId;
+      webSocketMap.put(userId, this);
       countOnline(1);
    }
 
@@ -108,6 +110,18 @@ public class WebSocketService {
       } catch (IOException e) {
          e.printStackTrace();
          logger.error(String.format("发送消息错误:%s, 原因:%s", e.getMessage()));
+      }
+   }
+
+   /**
+    * 实现服务器主动推送
+    */
+   public static void sendInfo(String userId, String message) {
+      logger.info("send to {}, message: {}", userId, message);
+      if (!StringUtils.isEmpty(userId) && webSocketMap.containsKey(userId)) {
+         webSocketMap.get(userId).sendMessage(message);
+      } else {
+         logger.error("user is offline, " + userId);
       }
    }
 
