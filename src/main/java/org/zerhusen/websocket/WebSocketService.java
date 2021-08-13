@@ -121,8 +121,10 @@ public class WebSocketService {
       if (!StringUtils.isEmpty(userId) && webSocketMap.containsKey(userId)) {
          webSocketMap.get(userId).sendMessage(message);
       } else {
-         logger.error("user is offline, " + userId);
+         logger.error("userId {} not find", userId);
+         throw new SocketUserNotFindException("userId" + userId +  " not find");
       }
+
    }
 
 }
